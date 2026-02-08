@@ -2,7 +2,11 @@
  * API Client for DFA/NFA Performance Analyzer Backend
  */
 
-const API_BASE_URL = 'http://localhost:3001/api';
+// Use environment variable or default to deployed Render backend
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://compiler-design-project-h7jd.onrender.com/api';
+const HEALTH_URL = import.meta.env.VITE_API_URL
+    ? import.meta.env.VITE_API_URL.replace('/api', '/health')
+    : 'https://compiler-design-project-h7jd.onrender.com/health';
 
 /**
  * Fetch predefined patterns from backend
@@ -117,7 +121,7 @@ export async function fullAnalysis(pattern: string) {
  */
 export async function checkBackendHealth() {
     try {
-        const response = await fetch('http://localhost:3001/health');
+        const response = await fetch(HEALTH_URL);
         const data = await response.json();
         return data.status === 'ok';
     } catch {
