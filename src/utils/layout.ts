@@ -1,70 +1,122 @@
 import type { Automaton, State } from '../types/automata';
 
-export function layoutAutomaton(automaton: Automaton, _width: number, height: number): Automaton {
+/**
+ * Improved automata layout algorithm.
+ * Uses BFS layering with barycenter ordering to minimize edge crossings,
+ * and wider spacing to prevent edge overlap.
+ */
+export function layoutAutomaton(automaton: Automaton, _width: number, _height: number): Automaton {
     const { states, transitions, startStateId } = automaton;
 
-    // Simple BFS Layering
+    if (states.length === 0) {
+        return automaton;
+    }
+
+    // ── Step 1: Build adjacency lists ──
+    const outEdges = new Map<string, string[]>();
+    const inEdges = new Map<string, string[]>();
+    for (const s of states) {
+        outEdges.set(s.id, []);
+        inEdges.set(s.id, []);
+    }
+    for (const t of transitions) {
+        if (t.source !== t.target) { // skip self-loops for layering
+            outEdges.get(t.source)?.push(t.target);
+            inEdges.get(t.target)?.push(t.source);
+        }
+    }
+
+    // ── Step 2: BFS layering from start state ──
     const layers = new Map<string, number>();
     const queue: { id: string; layer: number }[] = [{ id: startStateId, layer: 0 }];
     const visited = new Set<string>();
     visited.add(startStateId);
     layers.set(startStateId, 0);
 
-    let maxLayer = 0;
-
     while (queue.length > 0) {
         const { id, layer } = queue.shift()!;
-        maxLayer = Math.max(maxLayer, layer);
-
-        const outTransitions = transitions.filter(t => t.source === id);
-        for (const t of outTransitions) {
-            if (!visited.has(t.target)) {
-                visited.add(t.target);
-                layers.set(t.target, layer + 1);
-                queue.push({ id: t.target, layer: layer + 1 });
+        const neighbors = outEdges.get(id) || [];
+        for (const target of neighbors) {
+            if (!visited.has(target)) {
+                visited.add(target);
+                layers.set(target, layer + 1);
+                queue.push({ id: target, layer: layer + 1 });
             }
         }
     }
 
-    // Handle disconnected components
-    states.forEach(state => {
+    // Handle disconnected states — place them in layer 0
+    for (const state of states) {
         if (!visited.has(state.id)) {
             layers.set(state.id, 0);
         }
-    });
+    }
 
-    // Group by layer
+    // ── Step 3: Group states by layer ──
     const layerGroups = new Map<number, State[]>();
-    states.forEach(state => {
+    let maxLayer = 0;
+    for (const state of states) {
         const l = layers.get(state.id) || 0;
+        maxLayer = Math.max(maxLayer, l);
         if (!layerGroups.has(l)) layerGroups.set(l, []);
         layerGroups.get(l)!.push(state);
-    });
+    }
 
-    // INCREASED SPACING for cleaner layout
-    const rankSep = 200; // Horizontal separation between layers
-    const nodeSep = 150; // Vertical separation between nodes in same layer
-    const startX = 100;  // Left margin
-    const startY = 100;  // Top margin
+    // ── Step 4: Barycenter ordering to reduce edge crossings ──
+    // For each layer (except layer 0), order nodes by the average position
+    // of their neighbors in the previous layer.
+    // Run multiple passes for better results.
+    for (let pass = 0; pass < 4; pass++) {
+        for (let l = 1; l <= maxLayer; l++) {
+            const nodesInLayer = layerGroups.get(l);
+            if (!nodesInLayer || nodesInLayer.length <= 1) continue;
 
-    // Calculate positions
+            const prevLayer = layerGroups.get(l - 1) || [];
+            const prevPositions = new Map<string, number>();
+            prevLayer.forEach((s, idx) => prevPositions.set(s.id, idx));
+
+            // Compute barycenter for each node
+            const barycenters = nodesInLayer.map(state => {
+                const predecessors = (inEdges.get(state.id) || []).filter(id => {
+                    return layers.get(id) === l - 1;
+                });
+                if (predecessors.length === 0) return { state, bc: Infinity };
+                const sum = predecessors.reduce((acc, id) => acc + (prevPositions.get(id) || 0), 0);
+                return { state, bc: sum / predecessors.length };
+            });
+
+            barycenters.sort((a, b) => a.bc - b.bc);
+            layerGroups.set(l, barycenters.map(b => b.state));
+        }
+    }
+
+    // ── Step 5: Position calculation with generous spacing ──
+    const rankSep = 220;  // Horizontal distance between layers
+    const nodeSep = 160;  // Vertical distance between nodes in same layer
+    const startX = 80;
+    const startY = 80;
+
+    // Find the tallest layer for vertical centering
+    let maxLayerSize = 0;
+    for (let l = 0; l <= maxLayer; l++) {
+        const count = (layerGroups.get(l) || []).length;
+        maxLayerSize = Math.max(maxLayerSize, count);
+    }
+
     const newStates = states.map(state => {
         const l = layers.get(state.id) || 0;
         const nodesInLayer = layerGroups.get(l)!;
         const indexInLayer = nodesInLayer.indexOf(state);
         const layerSize = nodesInLayer.length;
 
-        // Center vertically based on layer size
+        // Center this layer vertically relative to available height
         const totalLayerHeight = (layerSize - 1) * nodeSep;
-        const yOffset = Math.max(startY, (height - totalLayerHeight) / 2);
-
-        // Always use clean state ID as label (q0, q1 for NFA, D0, D1 for DFA, M0, M1 for MinDFA)
-        // This is cleaner than showing set notation like {0,1,2}
-        const shortLabel = state.id;
+        const maxTotalHeight = (maxLayerSize - 1) * nodeSep;
+        const yOffset = startY + (maxTotalHeight - totalLayerHeight) / 2;
 
         return {
             ...state,
-            label: shortLabel,
+            label: state.id,
             x: startX + l * rankSep,
             y: yOffset + indexInLayer * nodeSep,
         };
@@ -75,4 +127,3 @@ export function layoutAutomaton(automaton: Automaton, _width: number, height: nu
         states: newStates,
     };
 }
-

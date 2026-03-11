@@ -1,0 +1,3 @@
+﻿src/components/AutomataVisualizer.tsx(124,21): error TS2353: Object literal may only specify known properties, and 'sourcePosition' does not exist in type 'DefaultEdge<any> | SmoothStepEdgeType<any>'.
+src/components/AutomataVisualizer.tsx(170,21): error TS2353: Object literal may only specify known properties, and 'sourcePosition' does not exist in type 'DefaultEdge<any> | SmoothStepEdgeType<any>'.
+src/utils/layout.ts(8,71): error TS6133: 'height' is declared but its value is never read.
