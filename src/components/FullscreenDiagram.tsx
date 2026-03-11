@@ -192,14 +192,7 @@ export function FullscreenDiagram({ automaton, title, onClose }: Props) {
         <div className="fixed inset-0 z-50 bg-white">
             {/* Header */}
             <div className="absolute top-0 left-0 right-0 h-14 bg-gradient-to-r from-blue-600 to-indigo-600 flex items-center justify-between px-6 z-10 shadow-lg">
-                <div className="flex items-center gap-3">
-                    <Maximize2 className="w-5 h-5 text-white" />
-                    <h1 className="text-lg font-bold text-white">{title}</h1>
-                </div>
                 <div className="flex items-center gap-4">
-                    <span className="text-white/80 text-sm">
-                        {automaton.states.length} states · {automaton.transitions.length} transitions
-                    </span>
                     <button
                         onClick={onClose}
                         className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-white transition-all"
@@ -207,6 +200,13 @@ export function FullscreenDiagram({ automaton, title, onClose }: Props) {
                         <X className="w-4 h-4" />
                         Close (ESC)
                     </button>
+                </div>
+                <div className="flex items-center gap-3">
+                    <span className="text-white/80 text-sm">
+                        {automaton.states.length} states · {automaton.transitions.length} transitions
+                    </span>
+                    <Maximize2 className="w-5 h-5 text-white" />
+                    <h1 className="text-lg font-bold text-white">{title}</h1>
                 </div>
             </div>
 
