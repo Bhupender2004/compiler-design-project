@@ -149,6 +149,21 @@ export function InputPanel({
                     <li>• <code className="bg-gray-200 px-1 rounded">ab</code> - Concatenation</li>
                 </ul>
             </div>
+
+            <details className="text-xs text-gray-600 bg-blue-50 border border-blue-100 p-3 rounded-md">
+                <summary className="font-semibold text-blue-800 cursor-pointer">Docs: How to use this analyzer</summary>
+                <ol className="mt-2 ml-4 list-decimal space-y-1">
+                    <li>Choose a preset pattern from <strong>Select Pattern</strong> or keep <strong>Custom Pattern</strong>.</li>
+                    <li>Enter a valid regular expression in <strong>Regular Expression</strong> (example: <code className="bg-blue-100 px-1 rounded">(a|b)*abb</code>).</li>
+                    <li>Optionally enter a <strong>Test String</strong> (leave empty to test epsilon).</li>
+                    <li>Click <strong>Run Analysis</strong> to generate NFA, DFA, and minimized DFA.</li>
+                    <li>Use the top tabs to switch between NFA, DFA, Minimized, and Comparison views.</li>
+                    <li>Check <strong>Simulation Result</strong> to confirm whether your test string is accepted or rejected.</li>
+                </ol>
+                <p className="mt-2 text-[11px] text-blue-900">
+                    Tip: For expected output, ensure the regex matches your test string language. Example: <code className="bg-blue-100 px-1 rounded">a*b</code> accepts <code className="bg-blue-100 px-1 rounded">aaab</code> but rejects <code className="bg-blue-100 px-1 rounded">aba</code>.
+                </p>
+            </details>
         </div>
     );
 }
