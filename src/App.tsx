@@ -18,8 +18,12 @@ const FALLBACK_PATTERNS = [
 ];
 
 function App() {
-    const [currentRegex, setCurrentRegex] = useState('');
-    const [currentTestString, setCurrentTestString] = useState('');
+    // Input state (what user is typing - does NOT trigger analysis)
+    const [inputRegex, setInputRegex] = useState('');
+    const [inputTestString, setInputTestString] = useState('');
+    // Analysis state (committed - triggers diagram generation)
+    const [analysisRegex, setAnalysisRegex] = useState('');
+    const [analysisTestString, setAnalysisTestString] = useState('');
     const [patterns, setPatterns] = useState(FALLBACK_PATTERNS);
     const [backendOnline, setBackendOnline] = useState(false);
     const [isFullscreen, setIsFullscreen] = useState(false);
@@ -44,7 +48,7 @@ function App() {
         loadPatterns();
     }, []);
 
-    const { nfa, dfa, minDFA, metrics, error } = useAutomata(currentRegex);
+    const { nfa, dfa, minDFA, metrics, error } = useAutomata(analysisRegex);
 
     // State for active tab
     const [activeTab, setActiveTab] = useState<'NFA' | 'DFA' | 'MIN' | 'COMPARE'>('NFA');
@@ -59,11 +63,11 @@ function App() {
         setIsPlaying,
         currentStep,
         isAccepted
-    } = useSimulation(activeAutomaton, currentTestString);
+    } = useSimulation(activeAutomaton, analysisTestString);
 
     const handleRunAnalysis = (regex: string, testString: string) => {
-        setCurrentRegex(regex);
-        setCurrentTestString(testString);
+        setAnalysisRegex(regex);
+        setAnalysisTestString(testString);
     };
 
     return (
@@ -116,10 +120,10 @@ function App() {
                             <InputPanel
                                 onRunAnalysis={handleRunAnalysis}
                                 patterns={patterns}
-                                regex={currentRegex}
-                                testString={currentTestString}
-                                onRegexChange={setCurrentRegex}
-                                onTestStringChange={setCurrentTestString}
+                                regex={inputRegex}
+                                testString={inputTestString}
+                                onRegexChange={setInputRegex}
+                                onTestStringChange={setInputTestString}
                             />
                             {error && (
                                 <div className="mt-4 p-3 bg-red-50 text-red-700 rounded-md text-sm border border-red-200">
@@ -224,7 +228,7 @@ function App() {
             {isFullscreen && activeAutomaton && (
                 <FullscreenDiagram
                     automaton={activeAutomaton}
-                    title={`${activeTab === 'NFA' ? 'NFA' : activeTab === 'DFA' ? 'DFA' : 'Minimized DFA'} - ${currentRegex}`}
+                    title={`${activeTab === 'NFA' ? 'NFA' : activeTab === 'DFA' ? 'DFA' : 'Minimized DFA'} - ${analysisRegex}`}
                     onClose={() => setIsFullscreen(false)}
                 />
             )}
