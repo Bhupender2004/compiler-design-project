@@ -67,12 +67,12 @@ export function InputPanel({
     return (
         <div className="space-y-6">
             <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Select Pattern
                 </label>
                 <select
                     value={selectedPattern}
-                    className="w-full border-gray-300 rounded-md shadow-sm p-2 border focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 rounded-md shadow-sm p-2 border focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     onChange={(e) => handlePatternChange(e.target.value)}
                 >
                     <option value="">Custom Pattern</option>
@@ -85,7 +85,7 @@ export function InputPanel({
             </div>
 
             <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1 flex justify-between">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 flex justify-between">
                     <span>Regular Expression</span>
                     <HelpCircle className="w-4 h-4 text-gray-400 cursor-help" />
                 </label>
@@ -93,7 +93,7 @@ export function InputPanel({
                     type="text"
                     value={regex}
                     onChange={(e) => { onRegexChange(e.target.value); setError(null); }}
-                    className={`w-full rounded-md shadow-sm p-2 border font-mono focus:ring-2 focus:ring-blue-500 ${error ? 'border-red-400' : 'border-gray-300'}`}
+                    className={`w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-md shadow-sm p-2 border font-mono focus:ring-2 focus:ring-blue-500 ${error ? 'border-red-400 dark:border-red-500' : 'border-gray-300 dark:border-gray-600'}`}
                     placeholder="e.g., (a|b)*"
                 />
                 {error && (
@@ -105,18 +105,18 @@ export function InputPanel({
             </div>
 
             <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Test String
                 </label>
                 <input
                     type="text"
                     value={testString}
                     onChange={(e) => onTestStringChange(e.target.value)}
-                    className="w-full border-gray-300 rounded-md shadow-sm p-2 border font-mono focus:ring-2 focus:ring-blue-500"
+                    className="w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 rounded-md shadow-sm p-2 border font-mono focus:ring-2 focus:ring-blue-500"
                     placeholder="Enter string to test (leave empty for ε)"
                 />
                 {testString === '' && regex && (
-                    <div className="text-gray-500 text-xs mt-1">
+                    <div className="text-gray-500 dark:text-gray-400 text-xs mt-1">
                         ε (empty string) will be tested
                     </div>
                 )}
@@ -133,35 +133,35 @@ export function InputPanel({
                 </button>
                 <button
                     onClick={handleReset}
-                    className="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-50 transition-colors"
+                    className="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
                     title="Reset all"
                 >
                     <RotateCcw className="w-4 h-4" />
                 </button>
             </div>
 
-            <div className="text-xs text-gray-500 bg-gray-50 p-3 rounded-md">
-                <strong>Supported operators:</strong>
+            <div className="text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 border border-transparent dark:border-gray-700 p-3 rounded-md">
+                <strong className="text-gray-700 dark:text-gray-300">Supported operators:</strong>
                 <ul className="mt-1 space-y-0.5">
-                    <li>• <code className="bg-gray-200 px-1 rounded">|</code> - Union (or)</li>
-                    <li>• <code className="bg-gray-200 px-1 rounded">*</code> - Kleene star (zero or more)</li>
-                    <li>• <code className="bg-gray-200 px-1 rounded">()</code> - Grouping</li>
-                    <li>• <code className="bg-gray-200 px-1 rounded">ab</code> - Concatenation</li>
+                    <li>• <code className="bg-gray-200 dark:bg-gray-700 px-1 rounded text-gray-800 dark:text-gray-200">|</code> - Union (or)</li>
+                    <li>• <code className="bg-gray-200 dark:bg-gray-700 px-1 rounded text-gray-800 dark:text-gray-200">*</code> - Kleene star (zero or more)</li>
+                    <li>• <code className="bg-gray-200 dark:bg-gray-700 px-1 rounded text-gray-800 dark:text-gray-200">()</code> - Grouping</li>
+                    <li>• <code className="bg-gray-200 dark:bg-gray-700 px-1 rounded text-gray-800 dark:text-gray-200">ab</code> - Concatenation</li>
                 </ul>
             </div>
 
-            <details className="text-xs text-gray-600 bg-blue-50 border border-blue-100 p-3 rounded-md">
-                <summary className="font-semibold text-blue-800 cursor-pointer">Docs: How to use this analyzer</summary>
+            <details className="text-xs text-gray-600 dark:text-gray-300 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/50 p-3 rounded-md">
+                <summary className="font-semibold text-blue-800 dark:text-blue-300 cursor-pointer">Docs: How to use this analyzer</summary>
                 <ol className="mt-2 ml-4 list-decimal space-y-1">
                     <li>Choose a preset pattern from <strong>Select Pattern</strong> or keep <strong>Custom Pattern</strong>.</li>
-                    <li>Enter a valid regular expression in <strong>Regular Expression</strong> (example: <code className="bg-blue-100 px-1 rounded">(a|b)*abb</code>).</li>
+                    <li>Enter a valid regular expression in <strong>Regular Expression</strong> (example: <code className="bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-200 px-1 rounded">(a|b)*abb</code>).</li>
                     <li>Optionally enter a <strong>Test String</strong> (leave empty to test epsilon).</li>
                     <li>Click <strong>Run Analysis</strong> to generate NFA, DFA, and minimized DFA.</li>
                     <li>Use the top tabs to switch between NFA, DFA, Minimized, and Comparison views.</li>
                     <li>Check <strong>Simulation Result</strong> to confirm whether your test string is accepted or rejected.</li>
                 </ol>
-                <p className="mt-2 text-[11px] text-blue-900">
-                    Tip: For expected output, ensure the regex matches your test string language. Example: <code className="bg-blue-100 px-1 rounded">a*b</code> accepts <code className="bg-blue-100 px-1 rounded">aaab</code> but rejects <code className="bg-blue-100 px-1 rounded">aba</code>.
+                <p className="mt-2 text-[11px] text-blue-900 dark:text-blue-400">
+                    Tip: For expected output, ensure the regex matches your test string language. Example: <code className="bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-200 px-1 rounded">a*b</code> accepts <code className="bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-200 px-1 rounded">aaab</code> but rejects <code className="bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-200 px-1 rounded">aba</code>.
                 </p>
             </details>
         </div>
