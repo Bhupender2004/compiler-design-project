@@ -27,23 +27,14 @@ function App() {
     const [patterns, setPatterns] = useState(FALLBACK_PATTERNS);
     const [backendOnline, setBackendOnline] = useState(false);
     const [isFullscreen, setIsFullscreen] = useState(false);
-    const [isDarkMode, setIsDarkMode] = useState(() => {
-        if (typeof window !== 'undefined') {
-            const saved = localStorage.getItem('theme');
-            if (saved) return saved === 'dark';
-            return false; // Specifically default to light mode
-        }
-        return false;
-    });
+    const [isDarkMode, setIsDarkMode] = useState(false);
 
     useEffect(() => {
         const root = window.document.documentElement;
         if (isDarkMode) {
             root.classList.add('dark');
-            localStorage.setItem('theme', 'dark');
         } else {
             root.classList.remove('dark');
-            localStorage.setItem('theme', 'light');
         }
     }, [isDarkMode]);
 
