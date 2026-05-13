@@ -9,6 +9,7 @@ import {
     Legend,
 } from 'chart.js';
 import type { AllMetrics } from '../hooks/useAutomata';
+import { Activity } from 'lucide-react';
 
 ChartJS.register(
     CategoryScale,
@@ -30,8 +31,8 @@ export function ComparisonView({ metrics }: Props) {
             {
                 label: 'State Count',
                 data: [metrics.nfa.stateCount, metrics.dfa.stateCount, metrics.minDfa.stateCount],
-                backgroundColor: 'rgba(59, 130, 246, 0.5)',
-                borderColor: 'rgb(59, 130, 246)',
+                backgroundColor: 'rgba(99, 102, 241, 0.5)',
+                borderColor: 'rgb(99, 102, 241)',
                 borderWidth: 1,
             },
             {
@@ -49,66 +50,93 @@ export function ComparisonView({ metrics }: Props) {
         plugins: {
             legend: {
                 position: 'top' as const,
+                labels: {
+                    font: {
+                        family: 'Inter',
+                        weight: '600'
+                    }
+                }
             },
             title: {
-                display: true,
-                text: 'State & Transition Comparison',
+                display: false
             },
         },
+        scales: {
+            y: {
+                beginAtZero: true,
+                grid: {
+                    display: false
+                }
+            },
+            x: {
+                grid: {
+                    display: false
+                }
+            }
+        }
     };
 
     return (
-        <div className="h-full flex flex-col p-6 overflow-y-auto transition-colors">
-            <h2 className="text-2xl font-bold mb-6 text-gray-800 dark:text-gray-200">Performance Comparison</h2>
+        <div className="h-full flex flex-col p-8 overflow-y-auto custom-scrollbar transition-colors">
+            <div className="mb-8">
+                <h2 className="text-2xl font-bold text-slate-900 dark:text-zinc-100 tracking-tight">Performance Comparison</h2>
+                <p className="text-sm text-slate-500 dark:text-zinc-500 mt-1">Benchmarking state and transition efficiency across automata types.</p>
+            </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700 transition-colors">
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 mb-8">
+                <div className="bg-white dark:bg-zinc-950 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-zinc-800 transition-all">
                     <Bar options={options} data={data} />
                 </div>
 
-                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700 transition-colors">
-                    <h3 className="font-semibold text-lg mb-4 text-gray-900 dark:text-gray-100">Metric Details</h3>
-                    <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                        <thead className="bg-gray-50 dark:bg-gray-900/50">
-                            <tr>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Metric</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">NFA</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">DFA</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Minimized</th>
-                            </tr>
-                        </thead>
-                        <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                            <tr>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-200">States</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{metrics.nfa.stateCount}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{metrics.dfa.stateCount}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-purple-600 dark:text-purple-400 font-bold">{metrics.minDfa.stateCount}</td>
-                            </tr>
-                            <tr>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-200">Transitions</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{metrics.nfa.transitionCount}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{metrics.dfa.transitionCount}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{metrics.minDfa.transitionCount}</td>
-                            </tr>
-                            <tr>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-200">Construction Time</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{metrics.nfa.constructionTimeMs.toFixed(2)} ms</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{metrics.dfa.constructionTimeMs.toFixed(2)} ms</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{metrics.minDfa.constructionTimeMs.toFixed(2)} ms</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div className="bg-white dark:bg-zinc-950 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-zinc-800 transition-all flex flex-col">
+                    <h3 className="text-sm font-bold text-slate-900 dark:text-zinc-100 mb-6 uppercase tracking-wider opacity-70">Metric Details</h3>
+                    <div className="overflow-hidden rounded-xl border border-slate-100 dark:border-zinc-900">
+                        <table className="min-w-full divide-y divide-slate-200 dark:divide-zinc-800">
+                            <thead className="bg-slate-50 dark:bg-zinc-900/50">
+                                <tr>
+                                    <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-500 dark:text-zinc-500 uppercase tracking-widest">Metric</th>
+                                    <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-500 dark:text-zinc-500 uppercase tracking-widest">NFA</th>
+                                    <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-500 dark:text-zinc-500 uppercase tracking-widest">DFA</th>
+                                    <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-500 dark:text-zinc-500 uppercase tracking-widest">Minimized</th>
+                                </tr>
+                            </thead>
+                            <tbody className="bg-white dark:bg-zinc-950 divide-y divide-slate-200 dark:divide-zinc-800">
+                                <tr>
+                                    <td className="px-6 py-4 whitespace-nowrap text-xs font-bold text-slate-900 dark:text-zinc-200">States</td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-xs text-slate-600 dark:text-zinc-400 font-mono">{metrics.nfa.stateCount}</td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-xs text-slate-600 dark:text-zinc-400 font-mono">{metrics.dfa.stateCount}</td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-xs text-indigo-600 dark:text-indigo-400 font-bold font-mono">{metrics.minDfa.stateCount}</td>
+                                </tr>
+                                <tr>
+                                    <td className="px-6 py-4 whitespace-nowrap text-xs font-bold text-slate-900 dark:text-zinc-200">Transitions</td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-xs text-slate-600 dark:text-zinc-400 font-mono">{metrics.nfa.transitionCount}</td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-xs text-slate-600 dark:text-zinc-400 font-mono">{metrics.dfa.transitionCount}</td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-xs text-emerald-600 dark:text-emerald-400 font-bold font-mono">{metrics.minDfa.transitionCount}</td>
+                                </tr>
+                                <tr>
+                                    <td className="px-6 py-4 whitespace-nowrap text-xs font-bold text-slate-900 dark:text-zinc-200">Construction</td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-xs text-slate-600 dark:text-zinc-400 font-mono">{metrics.nfa.constructionTimeMs.toFixed(2)}ms</td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-xs text-slate-600 dark:text-zinc-400 font-mono">{metrics.dfa.constructionTimeMs.toFixed(2)}ms</td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-xs text-slate-600 dark:text-zinc-400 font-mono">{metrics.minDfa.constructionTimeMs.toFixed(2)}ms</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
 
-                    <div className="mt-6 p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-md border border-yellow-200 dark:border-yellow-800/50">
-                        <h4 className="font-semibold text-yellow-800 dark:text-yellow-500 mb-2">Analysis Analysis</h4>
-                        <p className="text-sm text-yellow-700 dark:text-yellow-600/90">
-                            The Minimized DFA has <strong className="text-yellow-800 dark:text-yellow-400">{Math.round((1 - metrics.minDfa.stateCount / metrics.nfa.stateCount) * 100)}%</strong> fewer states than the NFA
-                            and <strong className="text-yellow-800 dark:text-yellow-400">{Math.round((1 - metrics.minDfa.stateCount / metrics.dfa.stateCount) * 100)}%</strong> fewer states than the initial DFA.
-                        </p>
+                    <div className="mt-auto pt-8">
+                        <div className="p-5 bg-indigo-50/50 dark:bg-indigo-500/5 rounded-2xl border border-indigo-100/50 dark:border-indigo-500/10">
+                            <h4 className="text-xs font-bold text-indigo-900 dark:text-indigo-300 mb-2 uppercase tracking-tight flex items-center gap-2">
+                                <Activity className="w-3.5 h-3.5" />
+                                Optimization Summary
+                            </h4>
+                            <p className="text-sm text-indigo-900/70 dark:text-indigo-400/80 leading-relaxed">
+                                The Minimized DFA achieves a <strong className="text-indigo-900 dark:text-indigo-300 font-black">{Math.round((1 - metrics.minDfa.stateCount / metrics.nfa.stateCount) * 100)}%</strong> reduction in states compared to the NFA, 
+                                maximizing processing efficiency for large datasets.
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
-
         </div>
     );
 }

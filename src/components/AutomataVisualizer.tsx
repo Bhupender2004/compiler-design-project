@@ -67,32 +67,37 @@ export function AutomataVisualizer({ automaton, activeStateIds = [] }: Props) {
 
     // Build initial nodes
     const buildNodes = useCallback((): Node[] => {
-        return layoutedAutomaton.states.map((state) => ({
-            id: state.id,
-            position: { x: state.x || 0, y: state.y || 0 },
-            data: { label: state.label || state.id },
-            style: {
-                background: activeStateIds.includes(state.id)
-                    ? '#fb923c' // Orange for active
-                    : state.isStart
-                        ? '#f0fdf4' // Light green for start
-                        : '#fff',
-                border: `2px solid ${activeStateIds.includes(state.id) ? '#ea580c' :
-                    state.isAccept ? '#fbbf24' : '#94a3b8'
-                    }`,
-                borderRadius: '50%',
-                width: 50,
-                height: 50,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '12px',
-                fontWeight: 'bold',
-                boxShadow: state.isAccept ? '0 0 0 4px white, 0 0 0 6px #fbbf24' : 'none',
-                cursor: 'grab',
-            },
-            type: 'default',
-        }));
+        return layoutedAutomaton.states.map((state) => {
+            const isActive = activeStateIds.includes(state.id);
+            return {
+                id: state.id,
+                position: { x: state.x || 0, y: state.y || 0 },
+                data: { label: state.label || state.id },
+                style: {
+                    background: isActive
+                        ? '#6366f1' // Indigo 500 for active
+                        : state.isStart
+                            ? '#ecfdf5' // Emerald 50 for start
+                            : '#ffffff',
+                    color: isActive ? '#ffffff' : '#0f172a',
+                    border: `2px solid ${isActive ? '#4338ca' :
+                        state.isAccept ? '#10b981' : '#e2e8f0'
+                        }`,
+                    borderRadius: '50%',
+                    width: 45,
+                    height: 45,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '11px',
+                    fontFamily: 'Inter, sans-serif',
+                    fontWeight: '700',
+                    boxShadow: state.isAccept ? '0 0 0 3px white, 0 0 0 5px #10b981' : '0 1px 2px rgba(0,0,0,0.05)',
+                    cursor: 'grab',
+                },
+                type: 'default',
+            };
+        });
     }, [layoutedAutomaton, activeStateIds]);
 
     // Build edges with merged parallels, self-loop handling, and back-edge routing
@@ -114,76 +119,49 @@ export function AutomataVisualizer({ automaton, activeStateIds = [] }: Props) {
             const isSelfLoop = m.source === m.target;
 
             if (isSelfLoop) {
-                // Self-loop: use default bezier type for a clean loop arc
                 edges.push({
                     id: m.id,
                     source: m.source,
                     target: m.target,
                     label,
                     type: 'default',
-                    markerEnd: { type: MarkerType.ArrowClosed, width: 16, height: 16 },
-                    style: { stroke: '#8b5cf6', strokeWidth: 1.5 },
-                    labelStyle: { fill: '#5b21b6', fontWeight: 700, fontSize: '11px' },
-                    labelBgStyle: { fill: '#f5f3ff', stroke: '#c4b5fd', strokeWidth: 0.5 },
-                    labelBgPadding: [4, 3] as [number, number],
+                    markerEnd: { type: MarkerType.ArrowClosed, width: 16, height: 16, color: '#6366f1' },
+                    style: { stroke: '#6366f1', strokeWidth: 2, opacity: 0.8 },
+                    labelStyle: { fill: '#4338ca', fontWeight: 700, fontSize: '10px', fontFamily: 'JetBrains Mono' },
+                    labelBgStyle: { fill: '#ffffff', fillOpacity: 0.9, stroke: '#e0e7ff', strokeWidth: 1 },
+                    labelBgPadding: [4, 2] as [number, number],
+                    labelBgBorderRadius: 4,
                 });
                 continue;
             }
 
-            // Detect back-edges (target is to the left of source)
             const sourceX = layerMap.get(m.source) || 0;
             const targetX = layerMap.get(m.target) || 0;
             const isBackEdge = targetX < sourceX;
-
-            // Detect bidirectional edges (A→B and B→A both exist)
             const pairKey = [m.source, m.target].sort().join('__');
             const totalInPair = pairCount.get(pairKey) || 1;
             const currentIndex = pairIndex.get(pairKey) || 0;
             pairIndex.set(pairKey, currentIndex + 1);
 
+            const edgeConfig: Partial<Edge> = {
+                id: m.id,
+                source: m.source,
+                target: m.target,
+                label,
+                markerEnd: { type: MarkerType.ArrowClosed, width: 14, height: 14, color: '#94a3b8' },
+                style: { stroke: '#94a3b8', strokeWidth: 1.5, opacity: 0.7 },
+                labelStyle: { fill: '#334155', fontWeight: 700, fontSize: '10px', fontFamily: 'JetBrains Mono' },
+                labelBgStyle: { fill: '#ffffff', fillOpacity: 0.9, stroke: '#f1f5f9', strokeWidth: 1 },
+                labelBgPadding: [4, 2] as [number, number],
+                labelBgBorderRadius: 4,
+            };
+
             if (isBackEdge) {
-                // Back-edge: use bezier curve for cleaner routing
-                edges.push({
-                    id: m.id,
-                    source: m.source,
-                    target: m.target,
-                    label,
-                    type: 'default', // bezier curve for smooth routing
-                    markerEnd: { type: MarkerType.ArrowClosed, width: 16, height: 16 },
-                    style: { stroke: '#64748b', strokeWidth: 1.5 },
-                    labelStyle: { fill: '#0f172a', fontWeight: 700, fontSize: '11px' },
-                    labelBgStyle: { fill: '#f1f5f9', stroke: '#cbd5e1', strokeWidth: 0.5 },
-                    labelBgPadding: [4, 3] as [number, number],
-                });
+                edges.push({ ...edgeConfig, type: 'default' } as Edge);
             } else if (totalInPair > 1) {
-                // Bidirectional: use different edge types for visual offset
-                const edgeType = currentIndex === 0 ? 'smoothstep' : 'default';
-                edges.push({
-                    id: m.id,
-                    source: m.source,
-                    target: m.target,
-                    label,
-                    type: edgeType,
-                    markerEnd: { type: MarkerType.ArrowClosed, width: 16, height: 16 },
-                    style: { stroke: '#64748b', strokeWidth: 1.5 },
-                    labelStyle: { fill: '#0f172a', fontWeight: 700, fontSize: '11px' },
-                    labelBgStyle: { fill: '#f1f5f9', stroke: '#cbd5e1', strokeWidth: 0.5 },
-                    labelBgPadding: [4, 3] as [number, number],
-                });
+                edges.push({ ...edgeConfig, type: currentIndex === 0 ? 'smoothstep' : 'default' } as Edge);
             } else {
-                // Normal forward edge
-                edges.push({
-                    id: m.id,
-                    source: m.source,
-                    target: m.target,
-                    label,
-                    type: 'default',
-                    markerEnd: { type: MarkerType.ArrowClosed, width: 16, height: 16 },
-                    style: { stroke: '#64748b', strokeWidth: 1.5 },
-                    labelStyle: { fill: '#0f172a', fontWeight: 700, fontSize: '11px' },
-                    labelBgStyle: { fill: '#f1f5f9', stroke: '#cbd5e1', strokeWidth: 0.5 },
-                    labelBgPadding: [4, 3] as [number, number],
-                });
+                edges.push({ ...edgeConfig, type: 'default' } as Edge);
             }
         }
 
@@ -197,28 +175,28 @@ export function AutomataVisualizer({ automaton, activeStateIds = [] }: Props) {
     // Update nodes when automaton changes or active states change
     useEffect(() => {
         setNodes((currentNodes) => {
-            // If structure changed, rebuild completely
             if (currentNodes.length !== layoutedAutomaton.states.length) {
                 return buildNodes();
             }
-            // Otherwise just update styles (keep positions user may have dragged)
             return currentNodes.map((node) => {
                 const state = layoutedAutomaton.states.find(s => s.id === node.id);
                 if (!state) return node;
+                const isActive = activeStateIds.includes(state.id);
                 return {
                     ...node,
                     data: { label: state.label || state.id },
                     style: {
                         ...node.style,
-                        background: activeStateIds.includes(state.id)
-                            ? '#fb923c'
+                        background: isActive
+                            ? '#6366f1'
                             : state.isStart
-                                ? '#f0fdf4'
-                                : '#fff',
-                        border: `2px solid ${activeStateIds.includes(state.id) ? '#ea580c' :
-                            state.isAccept ? '#fbbf24' : '#94a3b8'
+                                ? '#ecfdf5'
+                                : '#ffffff',
+                        color: isActive ? '#ffffff' : '#0f172a',
+                        border: `2px solid ${isActive ? '#4338ca' :
+                            state.isAccept ? '#10b981' : '#e2e8f0'
                             }`,
-                        boxShadow: state.isAccept ? '0 0 0 4px white, 0 0 0 6px #fbbf24' : 'none',
+                        boxShadow: state.isAccept ? '0 0 0 3px white, 0 0 0 5px #10b981' : '0 1px 2px rgba(0,0,0,0.05)',
                     },
                 };
             });
@@ -243,8 +221,8 @@ export function AutomataVisualizer({ automaton, activeStateIds = [] }: Props) {
                 nodesConnectable={false}
                 elementsSelectable={true}
             >
-                <Background />
-                <Controls />
+                <Background color="#f1f5f9" gap={20} />
+                <Controls showInteractive={false} className="dark:bg-zinc-900 dark:border-zinc-800" />
             </ReactFlow>
         </div>
     );

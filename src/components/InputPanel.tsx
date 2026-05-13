@@ -65,105 +65,119 @@ export function InputPanel({
     };
 
     return (
-        <div className="space-y-6">
-            <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Select Pattern
-                </label>
-                <select
-                    value={selectedPattern}
-                    className="w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 rounded-md shadow-sm p-2 border focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    onChange={(e) => handlePatternChange(e.target.value)}
-                >
-                    <option value="">Custom Pattern</option>
-                    {patterns.map((p) => (
-                        <option key={p.name} value={p.regex}>
-                            {p.name}
-                        </option>
-                    ))}
-                </select>
+        <div className="space-y-8">
+            <div className="space-y-4">
+                <div>
+                    <label className="block text-[11px] font-bold text-slate-500 dark:text-zinc-500 mb-1.5 uppercase tracking-wider">
+                        Select Pattern
+                    </label>
+                    <select
+                        value={selectedPattern}
+                        className="w-full bg-slate-50 dark:bg-zinc-900 text-slate-900 dark:text-zinc-100 border-slate-200 dark:border-zinc-800 rounded-xl shadow-sm p-2.5 border focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all appearance-none text-sm"
+                        onChange={(e) => handlePatternChange(e.target.value)}
+                    >
+                        <option value="">Custom Pattern</option>
+                        {patterns.map((p) => (
+                            <option key={p.name} value={p.regex}>
+                                {p.name}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+
+                <div>
+                    <label className="block text-[11px] font-bold text-slate-500 dark:text-zinc-500 mb-1.5 uppercase tracking-wider flex justify-between items-center">
+                        <span>Regular Expression</span>
+                        <HelpCircle className="w-3.5 h-3.5 text-slate-400 cursor-help" />
+                    </label>
+                    <input
+                        type="text"
+                        value={regex}
+                        onChange={(e) => { onRegexChange(e.target.value); setError(null); }}
+                        className={`w-full bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 rounded-xl shadow-sm p-3 border font-mono text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all ${error ? 'border-red-400 dark:border-red-500/50 bg-red-50/30 dark:bg-red-500/5' : 'border-slate-200 dark:border-zinc-800'}`}
+                        placeholder="e.g., (a|b)*"
+                    />
+                    {error && (
+                        <div className="text-red-500 text-[11px] font-medium mt-1.5 flex items-center gap-1.5 px-1">
+                            <AlertCircle className="w-3.5 h-3.5" />
+                            {error}
+                        </div>
+                    )}
+                </div>
+
+                <div>
+                    <label className="block text-[11px] font-bold text-slate-500 dark:text-zinc-500 mb-1.5 uppercase tracking-wider">
+                        Test String
+                    </label>
+                    <input
+                        type="text"
+                        value={testString}
+                        onChange={(e) => onTestStringChange(e.target.value)}
+                        className="w-full bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 border-slate-200 dark:border-zinc-800 rounded-xl shadow-sm p-3 border font-mono text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all"
+                        placeholder="Enter string to test..."
+                    />
+                    {testString === '' && regex && (
+                        <div className="text-slate-400 dark:text-zinc-500 text-[11px] mt-1.5 flex items-center gap-1.5 px-1">
+                            <div className="w-1 h-1 rounded-full bg-slate-300 dark:bg-zinc-700" />
+                            Testing ε (empty string)
+                        </div>
+                    )}
+                </div>
             </div>
 
-            <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 flex justify-between">
-                    <span>Regular Expression</span>
-                    <HelpCircle className="w-4 h-4 text-gray-400 cursor-help" />
-                </label>
-                <input
-                    type="text"
-                    value={regex}
-                    onChange={(e) => { onRegexChange(e.target.value); setError(null); }}
-                    className={`w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-md shadow-sm p-2 border font-mono focus:ring-2 focus:ring-blue-500 ${error ? 'border-red-400 dark:border-red-500' : 'border-gray-300 dark:border-gray-600'}`}
-                    placeholder="e.g., (a|b)*"
-                />
-                {error && (
-                    <div className="text-red-500 text-xs mt-1 flex items-center gap-1">
-                        <AlertCircle className="w-3 h-3" />
-                        {error}
-                    </div>
-                )}
-            </div>
-
-            <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Test String
-                </label>
-                <input
-                    type="text"
-                    value={testString}
-                    onChange={(e) => onTestStringChange(e.target.value)}
-                    className="w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 rounded-md shadow-sm p-2 border font-mono focus:ring-2 focus:ring-blue-500"
-                    placeholder="Enter string to test (leave empty for ε)"
-                />
-                {testString === '' && regex && (
-                    <div className="text-gray-500 dark:text-gray-400 text-xs mt-1">
-                        ε (empty string) will be tested
-                    </div>
-                )}
-            </div>
-
-            <div className="flex gap-3">
+            <div className="flex gap-3 pt-2">
                 <button
                     onClick={handleRun}
                     disabled={!regex.trim()}
-                    className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 flex items-center justify-center gap-2 font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="flex-1 bg-indigo-600 text-white px-4 py-3 rounded-xl hover:bg-indigo-700 active:scale-[0.98] flex items-center justify-center gap-2 text-sm font-bold disabled:opacity-50 disabled:active:scale-100 disabled:cursor-not-allowed transition-all shadow-lg shadow-indigo-600/20"
                 >
-                    <Play className="w-4 h-4" />
+                    <Play className="w-4 h-4 fill-current" />
                     Run Analysis
                 </button>
                 <button
                     onClick={handleReset}
-                    className="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
+                    className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-slate-600 dark:text-zinc-400 px-4 py-3 rounded-xl hover:bg-slate-50 dark:hover:bg-zinc-800 hover:text-slate-900 dark:hover:text-zinc-100 active:scale-[0.98] transition-all shadow-sm"
                     title="Reset all"
                 >
                     <RotateCcw className="w-4 h-4" />
                 </button>
             </div>
 
-            <div className="text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 border border-transparent dark:border-gray-700 p-3 rounded-md">
-                <strong className="text-gray-700 dark:text-gray-300">Supported operators:</strong>
-                <ul className="mt-1 space-y-0.5">
-                    <li>• <code className="bg-gray-200 dark:bg-gray-700 px-1 rounded text-gray-800 dark:text-gray-200">|</code> - Union (or)</li>
-                    <li>• <code className="bg-gray-200 dark:bg-gray-700 px-1 rounded text-gray-800 dark:text-gray-200">*</code> - Kleene star (zero or more)</li>
-                    <li>• <code className="bg-gray-200 dark:bg-gray-700 px-1 rounded text-gray-800 dark:text-gray-200">()</code> - Grouping</li>
-                    <li>• <code className="bg-gray-200 dark:bg-gray-700 px-1 rounded text-gray-800 dark:text-gray-200">ab</code> - Concatenation</li>
-                </ul>
-            </div>
+            <div className="pt-4 space-y-4">
+                <div className="text-[11px] bg-slate-50/50 dark:bg-zinc-900/50 border border-slate-100 dark:border-zinc-800/50 p-4 rounded-xl space-y-2">
+                    <strong className="text-slate-900 dark:text-zinc-200 uppercase tracking-tight opacity-70">Supported Operators</strong>
+                    <div className="grid grid-cols-2 gap-2 mt-1">
+                        <div className="flex items-center gap-2">
+                            <code className="bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 px-1.5 py-0.5 rounded text-[10px] font-bold text-indigo-600 dark:text-indigo-400">|</code>
+                            <span className="text-slate-500 dark:text-zinc-400">Union</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <code className="bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 px-1.5 py-0.5 rounded text-[10px] font-bold text-indigo-600 dark:text-indigo-400">*</code>
+                            <span className="text-slate-500 dark:text-zinc-400">Kleene Star</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <code className="bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 px-1.5 py-0.5 rounded text-[10px] font-bold text-indigo-600 dark:text-indigo-400">()</code>
+                            <span className="text-slate-500 dark:text-zinc-400">Grouping</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <code className="bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 px-1.5 py-0.5 rounded text-[10px] font-bold text-indigo-600 dark:text-indigo-400">ab</code>
+                            <span className="text-slate-500 dark:text-zinc-400">Concat</span>
+                        </div>
+                    </div>
+                </div>
 
-            <details className="text-xs text-gray-600 dark:text-gray-300 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/50 p-3 rounded-md">
-                <summary className="font-semibold text-blue-800 dark:text-blue-300 cursor-pointer">Docs: How to use this analyzer</summary>
-                <ol className="mt-2 ml-4 list-decimal space-y-1">
-                    <li>Choose a preset pattern from <strong>Select Pattern</strong> or keep <strong>Custom Pattern</strong>.</li>
-                    <li>Enter a valid regular expression in <strong>Regular Expression</strong> (example: <code className="bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-200 px-1 rounded">(a|b)*abb</code>).</li>
-                    <li>Optionally enter a <strong>Test String</strong> (leave empty to test epsilon).</li>
-                    <li>Click <strong>Run Analysis</strong> to generate NFA, DFA, and minimized DFA.</li>
-                    <li>Use the top tabs to switch between NFA, DFA, Minimized, and Comparison views.</li>
-                    <li>Check <strong>Simulation Result</strong> to confirm whether your test string is accepted or rejected.</li>
-                </ol>
-                <p className="mt-2 text-[11px] text-blue-900 dark:text-blue-400">
-                    Tip: For expected output, ensure the regex matches your test string language. Example: <code className="bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-200 px-1 rounded">a*b</code> accepts <code className="bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-200 px-1 rounded">aaab</code> but rejects <code className="bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-200 px-1 rounded">aba</code>.
-                </p>
-            </details>
+                <details className="group">
+                    <summary className="flex items-center justify-between text-[11px] font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50/50 dark:bg-indigo-500/5 border border-indigo-100/50 dark:border-indigo-500/10 p-3 rounded-xl cursor-pointer hover:bg-indigo-50 dark:hover:bg-indigo-500/10 transition-all list-none">
+                        <span className="uppercase tracking-wider">Instructions</span>
+                        <HelpCircle className="w-3.5 h-3.5 transition-transform group-open:rotate-180" />
+                    </summary>
+                    <div className="mt-2 px-3 py-1 space-y-3 text-[11px] text-slate-600 dark:text-zinc-400 leading-relaxed">
+                        <p>1. Choose a preset or enter a <strong>Regular Expression</strong> (e.g., <code className="text-indigo-600 dark:text-indigo-400 font-bold">(a|b)*abb</code>).</p>
+                        <p>2. Enter a <strong>Test String</strong> to visualize how it's processed.</p>
+                        <p>3. Use the tabs to compare <strong>NFA</strong>, <strong>DFA</strong>, and <strong>Minimized</strong> versions.</p>
+                    </div>
+                </details>
+            </div>
         </div>
     );
 }

@@ -81,35 +81,39 @@ function App() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col font-sans text-gray-900 dark:text-gray-100 transition-colors duration-200">
-            <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex items-center justify-between shadow-sm z-10 transition-colors duration-200">
+        <div className="min-h-screen bg-slate-50 dark:bg-[#09090b] flex flex-col font-sans text-slate-900 dark:text-zinc-100 transition-colors duration-200">
+            <header className="bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md sticky top-0 border-b border-slate-200 dark:border-zinc-800 px-6 py-3.5 flex items-center justify-between shadow-sm z-30 transition-colors duration-200">
                 <div className="flex items-center gap-3">
-                    <Layout className="w-6 h-6 text-blue-600" />
-                    <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">
-                        DFA vs NFA Analyzer
+                    <div className="bg-indigo-600 p-1.5 rounded-lg">
+                        <Layout className="w-5 h-5 text-white" />
+                    </div>
+                    <h1 className="text-lg font-bold tracking-tight text-slate-900 dark:text-zinc-50">
+                        Automata<span className="text-indigo-600">Lab</span>
                     </h1>
+                    <div className="h-4 w-px bg-slate-200 dark:bg-zinc-800 mx-1" />
                     {backendOnline ? (
-                        <span className="flex items-center gap-1 text-xs text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/30 px-2 py-1 rounded-full">
-                            <Server className="w-3 h-3" /> API Online
+                        <span className="flex items-center gap-1.5 text-[11px] font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-100 dark:border-emerald-500/20">
+                            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                            API Online
                         </span>
                     ) : (
-                        <span className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700/50 px-2 py-1 rounded-full">
+                        <span className="flex items-center gap-1.5 text-[11px] font-medium text-slate-500 dark:text-zinc-400 bg-slate-100 dark:bg-zinc-800 px-2 py-0.5 rounded-full border border-slate-200 dark:border-zinc-700">
                             <ServerOff className="w-3 h-3" /> Local Mode
                         </span>
                     )}
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-4">
                     {/* Tab Navigation */}
-                    <div className="flex bg-gray-100 dark:bg-gray-700 p-1 rounded-lg">
+                    <div className="flex bg-slate-100 dark:bg-zinc-900 p-1 rounded-xl border border-slate-200 dark:border-zinc-800">
                         {(['NFA', 'DFA', 'MIN', 'COMPARE'] as const).map(tab => (
                             <button
                                 key={tab}
                                 onClick={() => setActiveTab(tab)}
                                 className={cn(
-                                    "px-4 py-1.5 rounded-md text-sm font-medium transition-all",
+                                    "px-4 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200",
                                     activeTab === tab
-                                        ? "bg-white dark:bg-gray-600 text-blue-600 dark:text-blue-400 shadow-sm"
-                                        : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+                                        ? "bg-white dark:bg-zinc-800 text-indigo-600 dark:text-indigo-400 shadow-sm border border-slate-200 dark:border-zinc-700"
+                                        : "text-slate-500 dark:text-zinc-400 hover:text-slate-700 dark:hover:text-zinc-200"
                                 )}
                             >
                                 {tab === 'MIN' ? 'Minimized' : tab === 'COMPARE' ? 'Comparison' : tab}
@@ -119,10 +123,10 @@ function App() {
                     {/* Theme Toggle */}
                     <button
                         onClick={() => setIsDarkMode(!isDarkMode)}
-                        className="p-2 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-700 dark:hover:text-gray-200 rounded-lg transition-colors ml-2"
+                        className="p-2 text-slate-500 dark:text-zinc-400 hover:bg-slate-100 dark:hover:bg-zinc-900 hover:text-slate-700 dark:hover:text-zinc-200 rounded-xl border border-transparent hover:border-slate-200 dark:hover:border-zinc-800 transition-all"
                         title={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
                     >
-                        {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+                        {isDarkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
                     </button>
                 </div>
             </header>
@@ -130,11 +134,11 @@ function App() {
             <main className="flex-1 flex overflow-hidden">
                 {/* Left Sidebar: Input - Hide on Compare view if full width requested */}
                 {activeTab !== 'COMPARE' && (
-                    <div className="w-1/4 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col z-10 shadow-sm transition-colors duration-200">
-                        <div className="p-4 border-b border-gray-100 dark:border-gray-700">
-                            <h2 className="font-semibold text-gray-800 dark:text-gray-200">Configuration</h2>
+                    <div className="w-[300px] xl:w-[350px] bg-white dark:bg-zinc-950 border-r border-slate-200 dark:border-zinc-800 flex flex-col z-10 transition-colors duration-200">
+                        <div className="px-5 py-4 border-b border-slate-100 dark:border-zinc-900 flex items-center justify-between">
+                            <h2 className="text-sm font-bold text-slate-900 dark:text-zinc-100 tracking-tight uppercase opacity-70">Configuration</h2>
                         </div>
-                        <div className="p-4 overflow-y-auto flex-1">
+                        <div className="p-5 overflow-y-auto flex-1 custom-scrollbar">
                             <InputPanel
                                 onRunAnalysis={handleRunAnalysis}
                                 patterns={patterns}
@@ -155,12 +159,15 @@ function App() {
                 )}
 
                 {/* Center: Visualization or Comparison */}
-                <div className={cn("bg-gray-50 dark:bg-gray-900 relative flex flex-col transition-colors duration-200", activeTab === 'COMPARE' ? "w-full" : "w-1/2")}>
-                    <div className="absolute inset-0 overflow-hidden">
+                <div className={cn("bg-slate-50 dark:bg-[#0c0c0e] relative flex flex-col transition-colors duration-200", activeTab === 'COMPARE' ? "w-full" : "flex-1")}>
+                    <div className="absolute inset-0 overflow-hidden flex items-center justify-center p-8">
                         {activeTab === 'COMPARE' ? (
                             metrics ? <ComparisonView metrics={metrics} /> : (
-                                <div className="flex items-center justify-center h-full text-gray-400 dark:text-gray-500">
-                                    Run analysis to see comparison
+                                <div className="flex flex-col items-center gap-3 text-slate-400 dark:text-zinc-600">
+                                    <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-zinc-900 flex items-center justify-center">
+                                        <Layout className="w-6 h-6 opacity-40" />
+                                    </div>
+                                    <p className="text-sm font-medium">Run analysis to see comparison</p>
                                 </div>
                             )
                         ) : activeAutomaton ? (
@@ -169,52 +176,55 @@ function App() {
                                 activeStateIds={currentStep?.activeStateIds}
                             />
                         ) : (
-                            <div className="flex items-center justify-center h-full text-gray-400 dark:text-gray-500">
-                                Select a pattern and run analysis to visualize
+                            <div className="flex flex-col items-center gap-3 text-slate-400 dark:text-zinc-600">
+                                <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-zinc-900 flex items-center justify-center">
+                                    <Layout className="w-6 h-6 opacity-40" />
+                                </div>
+                                <p className="text-sm font-medium">Select a pattern and run analysis to visualize</p>
                             </div>
                         )}
                     </div>
 
                     {/* Simulation Controls Overlay */}
                     {activeAutomaton && activeTab !== 'COMPARE' && (
-                        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm border border-gray-200 dark:border-gray-700 px-4 py-2 rounded-full shadow-lg flex items-center gap-4 z-20">
+                        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 glass px-5 py-2.5 rounded-2xl shadow-2xl flex items-center gap-5 z-20 border border-white/20 dark:border-zinc-700/30 transition-all duration-300">
                             <button
                                 onClick={() => setCurrentStepIndex(Math.max(0, currentStepIndex - 1))}
                                 disabled={currentStepIndex === 0}
-                                className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full disabled:opacity-50 text-gray-700 dark:text-gray-300 transition-colors"
+                                className="p-1.5 hover:bg-slate-100 dark:hover:bg-zinc-800 rounded-xl disabled:opacity-30 text-slate-700 dark:text-zinc-300 transition-all"
                             >
                                 <SkipBack className="w-5 h-5" />
                             </button>
 
                             <button
                                 onClick={() => setIsPlaying(!isPlaying)}
-                                className="p-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors shadow-md"
+                                className="p-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-600/20 active:scale-95"
                             >
-                                {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5 pl-0.5" />}
+                                {isPlaying ? <Pause className="w-5 h-5 fill-current" /> : <Play className="w-5 h-5 fill-current pl-0.5" />}
                             </button>
 
                             <button
                                 onClick={() => setCurrentStepIndex(Math.min(steps.length - 1, currentStepIndex + 1))}
                                 disabled={currentStepIndex >= steps.length - 1}
-                                className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full disabled:opacity-50 text-gray-700 dark:text-gray-300 transition-colors"
+                                className="p-1.5 hover:bg-slate-100 dark:hover:bg-zinc-800 rounded-xl disabled:opacity-30 text-slate-700 dark:text-zinc-300 transition-all"
                             >
                                 <SkipForward className="w-5 h-5" />
                             </button>
 
-                            <div className="h-4 w-px bg-gray-300 dark:bg-gray-600 mx-2" />
+                            <div className="h-6 w-px bg-slate-200 dark:bg-zinc-800" />
 
-                            <div className="text-xs font-mono text-gray-600 dark:text-gray-400 min-w-[3ch] text-center">
-                                {currentStepIndex}/{Math.max(0, steps.length - 1)}
+                            <div className="text-[13px] font-mono font-bold text-slate-600 dark:text-zinc-400 min-w-[4ch] text-center bg-slate-100 dark:bg-zinc-800 px-2 py-1 rounded-lg">
+                                {currentStepIndex}<span className="opacity-30 mx-0.5">/</span>{Math.max(0, steps.length - 1)}
                             </div>
 
-                            <div className="h-4 w-px bg-gray-300 dark:bg-gray-600 mx-2" />
+                            <div className="h-6 w-px bg-slate-200 dark:bg-zinc-800" />
 
                             <button
                                 onClick={() => setIsFullscreen(true)}
-                                className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full text-gray-700 dark:text-gray-300 transition-colors"
+                                className="p-2 hover:bg-slate-100 dark:hover:bg-zinc-800 rounded-xl text-slate-700 dark:text-zinc-300 transition-all"
                                 title="Open fullscreen"
                             >
-                                <Maximize2 className="w-4 h-4 text-gray-700" />
+                                <Maximize2 className="w-4 h-4" />
                             </button>
                         </div>
                     )}
@@ -222,11 +232,11 @@ function App() {
 
                 {/* Right Sidebar: Results */}
                 {activeTab !== 'COMPARE' && (
-                    <div className="w-1/4 bg-white dark:bg-gray-800 border-l border-gray-200 dark:border-gray-700 flex flex-col z-10 shadow-sm transition-colors duration-200">
-                        <div className="p-4 border-b border-gray-100 dark:border-gray-700">
-                            <h2 className="font-semibold text-gray-800 dark:text-gray-200">Analysis Results</h2>
+                    <div className="w-[320px] xl:w-[380px] bg-white dark:bg-zinc-950 border-l border-slate-200 dark:border-zinc-800 flex flex-col z-10 transition-colors duration-200">
+                        <div className="px-5 py-4 border-b border-slate-100 dark:border-zinc-900 flex items-center justify-between">
+                            <h2 className="text-sm font-bold text-slate-900 dark:text-zinc-100 tracking-tight uppercase opacity-70">Analysis Results</h2>
                         </div>
-                        <div className="p-4 overflow-y-auto flex-1">
+                        <div className="p-5 overflow-y-auto flex-1 custom-scrollbar">
                             <ResultsPanel
                                 metrics={metrics ? (
                                     activeTab === 'NFA' ? metrics.nfa :
